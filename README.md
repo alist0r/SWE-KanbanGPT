@@ -1,4 +1,4 @@
-Task Managment App
+KanbanGPT
 * Daniel Graff
 * Norris Miller
 * Abdulaziz Aladdad
