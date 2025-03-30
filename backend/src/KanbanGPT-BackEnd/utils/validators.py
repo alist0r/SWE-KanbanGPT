@@ -1,4 +1,9 @@
+from sqlalchemy.orm import Session
+from models.models import User, ProjectColumn
+
 import re
+
+
 
 def is_valid_username(username: str) -> bool:
     """Must be >= 8 characters and only contain letters and numbers."""
@@ -23,3 +28,15 @@ def is_valid_name(name: str) -> bool:
 def is_valid_email_format(email: str) -> bool:
     """Basic format check."""
     return bool(re.fullmatch(r"[^@]+@[^@]+\.[^@]+", email))
+
+def validate_user_exists(db: Session, user_id: int):
+    return db.query(User).filter(User.UserID == user_id).first() is not None
+
+def validate_column_exists(db: Session, column_id: int):
+    return db.query(ProjectColumn).filter(ProjectColumn.ColumnID == column_id).first() is not None
+
+def validate_task_title(title: str):
+    return isinstance(title, str) and len(title) <= 40
+
+def validate_description(description: str):
+    return isinstance(description, str) and len(description.strip()) > 0

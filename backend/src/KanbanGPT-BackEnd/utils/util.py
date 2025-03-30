@@ -12,6 +12,7 @@ REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 JWT_SECRET = config('JWT_SECRET')
 JWT_ALGORITHM = config('JWT_ALGORITHM')
 JWT_REFRESH_SECRET_KEY = config('JWT_REFRESH_SECRET_KEY')  # should be kept secret
+openai.api_key = config("OPENAI_API_KEY")
 
 
 def signJWT(user_id: str):

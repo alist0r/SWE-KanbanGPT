@@ -1,8 +1,10 @@
+from asyncio import tasks
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
-from routes import users
+from routes import users, task
 from utils.database import engine
 from models import models
 import logging
@@ -12,6 +14,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = FastAPI(title="KanbanGPT")
 app.include_router(users.router, prefix="/api", tags=["Users"])
+app.include_router(task.router, prefix="/api", tags=["Tasks"])
+
 
 
 origins = ["*"]

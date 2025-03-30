@@ -5,3 +5,9 @@ class UserCreate(BaseModel):
     password: str
     email: str
     name: str
+
+class TaskCreate(BaseModel):
+    ColumnID: int
+    CreatedBy: int
+    title: str
+    description: str
