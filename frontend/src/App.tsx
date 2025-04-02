@@ -6,13 +6,12 @@ import axios from 'axios'
 
 function App() {
 	const [count, setCount] = useState(0)
-	axios.get('http://localhost:8080')
-		.then(function (response) {
-			console.log(response);
-		})
-		.catch(function (error) {
-			console.log(error);
-		});
+	axios.post('http://localhost:8000/api/users', {
+		username: 'foo',
+		password: 'bar',
+		email: 'foo@bar.com',
+		name: 'john foobar'
+	})
 	return (
 		<>
 		 <div>
