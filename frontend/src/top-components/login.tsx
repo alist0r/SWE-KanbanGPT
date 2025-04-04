@@ -4,7 +4,8 @@ const post_login = () => {
 	//todo make login request
 }
 
-const login = (swap_screen: Function) => {
+//temporary function names just to get things working, i know swap_screen2 is bad
+const login = (swap_screen: Function, swap_screen2: Function) => {
 	return () => {
 		return (
 			<>
@@ -23,6 +24,9 @@ const login = (swap_screen: Function) => {
 			<br />
 			<button onClick={swap_screen}>
 			 create user
+			</button>
+			<button onClick={swap_screen2}>
+			 create task
 			</button>
 			</>
 		)
