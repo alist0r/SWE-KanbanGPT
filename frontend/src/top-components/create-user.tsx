@@ -1,0 +1,41 @@
+import axios from 'axios'
+import { useState } from 'react'
+
+const create_submission_handler = (url: String) => {
+	return (formData) => {
+		axios.post(url, formData)
+		.then(function (response) {
+			console.log(response);
+		})
+		.catch(function (error) {
+			console.log(error);
+		});
+	}
+}
+
+const create_user = (swap_screen: Function) => {
+	const submission_handler = create_submission_handler("http://localhost:8000/api/users");
+	return () => {
+		return (
+			<>
+			 <form name="createUser" action={submission_handler}>
+			 <label>Username: </label>
+			 <input name="username" /><br />
+			 <label>Password: </label>
+			 <input name="password" /><br />
+			 <label>Name: </label>
+			 <input name="name" /><br />
+			 <label>Email: </label>
+			 <input name="email" /><br />
+			 <button>create</button>
+			 </form>
+			 or
+			 <br />
+			 <button onClick={swap_screen}>return to login</button>
+			</>
+		)
+
+	}
+}
+
+export { create_user }
