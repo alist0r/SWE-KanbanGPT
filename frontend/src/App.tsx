@@ -9,7 +9,7 @@ enum Pages {
 	login,
 	create_user,
 	board,
-	task
+	task,
 }
 
 const App = () => {
@@ -20,7 +20,7 @@ const App = () => {
 	}
 
 	const walk_login = () => {
-		setPage(Pages.login)
+		setPage(Pages.login);
 	}
 
 	let Main = () => {return <></>};
@@ -32,10 +32,10 @@ const App = () => {
 			Main = create_user(walk_login);
 			break;
 		case Pages.board:
-			Main = () => {return <></>}
+			Main = () => {return <></>};
 			break;
 		case Pages.task:
-			Main = () => {return <></>}
+			Main = () => {return <></>};
 			break;
 	}
 	
