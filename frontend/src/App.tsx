@@ -12,7 +12,7 @@ enum Pages {
 	task
 }
 
-function App() {
+const App = () => {
 	const [page, setPage] = useState(Pages.login);
 
 	const walk_create_user = () => {
