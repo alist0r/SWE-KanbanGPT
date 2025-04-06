@@ -2,7 +2,8 @@ from asyncio import tasks
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import OperationalError
 
 from routes import users, task
 from utils.database import engine
@@ -28,6 +29,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.exception_handler(OperationalError)
+async def db_exception_handler(request: Request, exc: OperationalError):
+    return JSONResponse(
+        status_code=503,
+        content={"detail": "Database is currently unavailable. Please try again later."}
+    )
 
 # @app.middleware("http")
 # async def exception_handling(request: Request, call_next):

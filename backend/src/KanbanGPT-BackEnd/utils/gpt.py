@@ -31,3 +31,24 @@ def generate_task_from_prompt(prompt: str) -> dict:
     description = lines[1].strip() if len(lines) > 1 else ""
 
     return {"title": title[:40], "description": description}
+
+def generate_guidance_for_task(title: str, description: str) -> str:
+    system_msg = {
+        "role": "system",
+        "content": (
+            "You are an assistant helping users break down tasks in a Kanban system."
+            "Provide step-by-step guidance, suggestions, and links to resources if appropriate."
+        )
+    }
+    user_msg = {
+        "role": "user",
+        "content": f"Here is a task:\n\nTitle: {title}\nDescription: {description}\n\nGive advice on how to approach it."
+    }
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[system_msg, user_msg],
+        temperature=0.7
+    )
+
+    return response.choices[0].message.content.strip()
