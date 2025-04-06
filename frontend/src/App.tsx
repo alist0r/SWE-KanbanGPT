@@ -14,6 +14,14 @@ enum Pages {
 	make_task
 }
 
+/**
+ * The app changes definition depending on the state of page. The state of page
+ * is changed by various 'walk' functions which traverses whats effectively a
+ * finite state machine tree. With this structure hooks should be created in
+ * this file and be passed down to components as arguments. This structure is
+ * subject to change as I better understand react throughout this project.
+ */
+
 const App = () => {
 	const [page, setPage] = useState(Pages.login);
 
