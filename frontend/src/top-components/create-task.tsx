@@ -5,8 +5,8 @@ const create_submission_handler = (url: String) => {
 	return (formData) => {
 		const json = {};
 		//placeholder hard coded values
-		json["ColumnID"] = 0;
-		json["CreatedBy"] = 0;
+		json["ColumnID"] = 1;
+		json["CreatedBy"] = 1;
 		formData.forEach((value, key) => {
 			json[key] = value;
 		});
@@ -30,7 +30,7 @@ const create_task = (swap_screen: Function) => {
 			 <label>Title: </label>
 			 <input name="title" /><br />
 			 <label>Description: </label>
-			 <input name="desciption" /><br />
+			 <input name="description" /><br />
 			 <button>create!</button>
 			 </form>
 			 or
