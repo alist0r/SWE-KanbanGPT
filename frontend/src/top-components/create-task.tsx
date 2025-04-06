@@ -30,7 +30,7 @@ const create_task = (swap_screen: Function) => {
 			 <label>Title: </label>
 			 <input name="title" /><br />
 			 <label>Description: </label>
-			 <input name="desc" /><br />
+			 <input name="desciption" /><br />
 			 <button>create!</button>
 			 </form>
 			 or
