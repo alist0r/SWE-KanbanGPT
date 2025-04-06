@@ -4,8 +4,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from utils.database import SessionLocal
 from classes.classes import TaskCreate
-from models.models import Task
-from utils import validators
+from models.models import Task, AITaskDirection
+from utils import validators, gpt
 
 router = APIRouter()
 
@@ -17,6 +17,17 @@ def get_db():
     finally:
         db.close()
 
+
+
+'''
+The create_task api call takes in a ColumnID, CreatedBy, title, and description.
+Checks that title and description are valid entries.
+Calls the generate_guidance_for_task from gpt.py to create a list of suggestions
+to complete the task.
+pushes the task title, description, columnid and userid that created it to the database
+also stores the response from the AI to the database.
+returns the ai response, taskID and the aiResponse
+'''
 @router.post("/tasks/")
 def create_task(task: TaskCreate, db: Session = Depends(get_db)):
     if not validators.validate_user_exists(db, task.CreatedBy):
@@ -31,21 +42,41 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):
     if not validators.validate_description(task.description):
         raise HTTPException(status_code=400, detail="Invalid task description")
 
-    # Create and insert task
-    new_task = Task(
-        ColumnID=task.ColumnID,
-        CreatedBy=task.CreatedBy,
-        title=task.title,
-        description=task.description
-    )
+    try:
+        ai_response = gpt.generate_guidance_for_task(task.title, task.description)
 
-    db.add(new_task)
-    db.commit()
-    db.refresh(new_task)
+        new_task = Task(
+            ColumnID=task.ColumnID,
+            CreatedBy=task.CreatedBy,
+            title=task.title,
+            description=task.description
+        )
+        db.add(new_task)
+        db.flush()
 
-    return {"message": "Task created successfully", "taskID": new_task.TaskID}
+        ai_entry = AITaskDirection(
+            projectID=new_task.column.ProjectID,
+            taskID=new_task.TaskID,
+            response=ai_response
+        )
+        db.add(ai_entry)
 
+        db.commit()
+        db.refresh(new_task)
+        db.refresh(ai_entry)
 
+    except Exception as e:
+        db.rollback()
+        print("Error during task creation:", str(e))
+        raise HTTPException(status_code=500, detail="Could not create task or AI guidance")
+
+    return {
+        "message": "Task created successfully",
+        "taskID": new_task.TaskID,
+        "aiResponse": ai_response
+    }
+
+'''
 @router.post("/tasks/ai")
 def create_ai_task(prompt: str, columnID: int, createdBy: int, db: Session = Depends(get_db)):
     from utils import gpt
@@ -75,3 +106,4 @@ def create_ai_task(prompt: str, columnID: int, createdBy: int, db: Session = Dep
         "title": task_data["title"],
         "description": task_data["description"]
     }
+'''

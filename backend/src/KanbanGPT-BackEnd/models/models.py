@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, func, Text
 from sqlalchemy.orm import relationship
 from utils.database import Base  
 
@@ -42,6 +42,7 @@ class Project(Base):
 
     creator = relationship("User", back_populates="projects")
     columns = relationship("ProjectColumn", back_populates="project")
+    ai_responses = relationship("AITaskDirection", back_populates="project")
 
 
 # Columns Table
@@ -71,6 +72,7 @@ class Task(Base):
     creator = relationship("User", back_populates="tasks_created")
     assignments = relationship("Assignment", back_populates="task")
     comments = relationship("Comment", back_populates="task")
+    ai_response = relationship("AITaskDirection", back_populates="task")
 
 
 # Assignments Table
@@ -109,3 +111,16 @@ class Comment(Base):
 
     task = relationship("Task", back_populates="comments")
     user = relationship("User", back_populates="comments")
+
+
+class AITaskDirection(Base):
+    __tablename__ = 'aiTaskDirections'
+
+    responseID = Column(Integer, primary_key=True, autoincrement=True)
+    projectID = Column(Integer, ForeignKey('Projects.ProjectID'), nullable=False)
+    taskID = Column(Integer, ForeignKey('Tasks.TaskID'), nullable=False)
+    response = Column(Text, nullable=False)
+    createdAt = Column(DateTime, server_default=func.now())
+
+    project = relationship("Project", back_populates="ai_responses")
+    task = relationship("Task", back_populates="ai_response")
