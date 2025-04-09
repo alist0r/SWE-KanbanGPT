@@ -7,6 +7,9 @@ from utils import validators
 from utils.security import hash_password
 from sqlalchemy.exc import IntegrityError
 
+# Import the JWT-based authentication dependency
+from utils.auth import get_current_user
+
 router = APIRouter()
 
 # Dependency to get DB session
@@ -18,7 +21,10 @@ def get_db():
         db.close()
 
 @router.post("/users", status_code=status.HTTP_201_CREATED)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+def create_user(
+    user: UserCreate,
+    db: Session = Depends(get_db)
+    ):
     '''
     Utilizes the create_user model from classes.py
     accepts:

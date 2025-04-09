@@ -1,25 +1,33 @@
 import axios from 'axios'
 import { useState } from 'react'
 
-const create_submission_handler = (url: String) => {
+const create_submission_handler = (url: string) => {
 	return (formData) => {
-		const json = {};
-		//placeholder hard coded values
-		json["ColumnID"] = 1;
-		json["CreatedBy"] = 1;
-		formData.forEach((value, key) => {
-			json[key] = value;
-		});
-		console.log(json)
-		axios.post(url, json)
-		.then(function (response) {
-			console.log(response);
-		})
-		.catch(function (error) {
-			console.log(error);
-		});
-	}
-}
+	  const json: any = {};
+	  // Placeholder values
+	  json["ColumnID"] = 1;
+	  formData.forEach((value, key) => {
+		json[key] = value;
+	  });
+  
+	  // Get token from localStorage
+	  const token = localStorage.getItem("access_token");
+	  console.log("Token being sent: ", token);
+
+	  axios.post(url, json, {
+		headers: {
+		  Authorization: `Bearer ${token}`,
+		},
+	  })
+	  .then(function (response) {
+		console.log(response);
+	  })
+	  .catch(function (error) {
+		console.log(error);
+	  });
+	};
+  };
+  
 
 const create_task = (swap_screen: Function) => {
 	const submission_handler = create_submission_handler("http://localhost:8000/api/tasks");

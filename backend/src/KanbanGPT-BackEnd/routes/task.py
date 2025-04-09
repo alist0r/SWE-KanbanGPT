@@ -6,6 +6,11 @@ from utils.database import SessionLocal
 from classes.classes import TaskCreate
 from models.models import Task, AITaskDirection
 from utils import validators, gpt
+import traceback
+
+# Import the JWT-based authentication dependency
+from utils.auth import get_current_user
+from models.models import User
 
 router = APIRouter()
 
@@ -29,8 +34,14 @@ also stores the response from the AI to the database.
 returns the ai response, taskID and the aiResponse
 '''
 @router.post("/tasks/")
-def create_task(task: TaskCreate, db: Session = Depends(get_db)):
-    if not validators.validate_user_exists(db, task.CreatedBy):
+def create_task(
+    task: TaskCreate,
+    db: Session = Depends(get_db),
+    # This dependency will check for a valid JWT and return the current user.
+    current_user: User = Depends(get_current_user)
+    ):
+
+    if not validators.validate_user_exists(db, current_user.UserID):
         raise HTTPException(status_code=404, detail="User does not exist")
 
     if not validators.validate_column_exists(db, task.ColumnID):
@@ -43,17 +54,20 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid task description")
 
     try:
-        ai_response = gpt.generate_guidance_for_task(task.title, task.description)
+        # ai_response = gpt.generate_guidance_for_task(task.title, task.description)
 
         new_task = Task(
             ColumnID=task.ColumnID,
-            CreatedBy=task.CreatedBy,
+            CreatedBy=current_user.UserID,
             title=task.title,
             description=task.description
         )
-        db.add(new_task)
-        db.flush()
 
+        db.add(new_task)
+        db.commit()
+        db.refresh(new_task)
+        db.close()
+        """
         ai_entry = AITaskDirection(
             projectID=new_task.column.ProjectID,
             taskID=new_task.TaskID,
@@ -64,16 +78,21 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_task)
         db.refresh(ai_entry)
+        """
 
     except Exception as e:
         db.rollback()
+        print("="*80)
+        print("EXCEPTION CAUGHT IN /tasks/")
+        traceback.print_exc()  # Full traceback
+        print("="*80)
         print("Error during task creation:", str(e))
         raise HTTPException(status_code=500, detail="Could not create task or AI guidance")
 
     return {
         "message": "Task created successfully",
         "taskID": new_task.TaskID,
-        "aiResponse": ai_response
+        # "aiResponse": ai_response
     }
 
 '''

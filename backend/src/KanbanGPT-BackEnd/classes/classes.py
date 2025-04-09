@@ -10,7 +10,8 @@ class UserCreate(BaseModel):
 
 class TaskCreate(BaseModel):
     ColumnID: int
-    CreatedBy: int
+    # CreatedBy is now automatically validated through our authentication
+    # CreatedBy: int
     title: str
     description: str
 

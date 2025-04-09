@@ -1,7 +1,8 @@
-from datetime import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, func, Text
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-from utils.database import Base  
+from utils.database import Base
 
 # Users Table
 class User(Base):
@@ -9,7 +10,7 @@ class User(Base):
 
     UserID = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String(32), unique=True, nullable=False)
-    password = Column(String(255), nullable=False)  
+    password = Column(String(255), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     name = Column(String(50), nullable=False)
 
@@ -35,9 +36,9 @@ class Project(Base):
     __tablename__ = 'Projects'
 
     ProjectID = Column(Integer, primary_key=True, autoincrement=True)
-    Creator = Column(Integer, ForeignKey('Users.UserID'), nullable=False)  
+    Creator = Column(Integer, ForeignKey('Users.UserID'), nullable=False)
     description = Column(String)  # TEXT equivalent
-    dateCreated = Column(DateTime, default=datetime.utcnow)
+    dateCreated = Column(DateTime(timezone=False), server_default=func.now())
     title = Column(String(40), nullable=False)
 
     creator = relationship("User", back_populates="projects")
@@ -50,7 +51,7 @@ class ProjectColumn(Base):
     __tablename__ = 'ProjectColumns'
 
     ColumnID = Column(Integer, primary_key=True, autoincrement=True)
-    ProjectID = Column(Integer, ForeignKey('Projects.ProjectID'), nullable=False)  
+    ProjectID = Column(Integer, ForeignKey('Projects.ProjectID'), nullable=False)
     title = Column(String(40), nullable=False)
 
     project = relationship("Project", back_populates="columns")
@@ -62,11 +63,11 @@ class Task(Base):
     __tablename__ = 'Tasks'
 
     TaskID = Column(Integer, primary_key=True, autoincrement=True)
-    ColumnID = Column(Integer, ForeignKey('ProjectColumns.ColumnID'), nullable=False) 
-    CreatedBy = Column(Integer, ForeignKey('Users.UserID'), nullable=False)  
+    ColumnID = Column(Integer, ForeignKey('ProjectColumns.ColumnID'), nullable=False)
+    CreatedBy = Column(Integer, ForeignKey('Users.UserID'), nullable=False)
     title = Column(String(40), nullable=False)
-    description = Column(String) 
-    dateCreated = Column(DateTime, default=datetime.utcnow)
+    description = Column(String)
+    dateCreated = Column(DateTime(timezone=False), server_default=func.now())
 
     column = relationship("ProjectColumn", back_populates="tasks")
     creator = relationship("User", back_populates="tasks_created")
@@ -80,10 +81,10 @@ class Assignment(Base):
     __tablename__ = 'Assignments'
 
     AssignmentID = Column(Integer, primary_key=True, autoincrement=True)
-    TaskID = Column(Integer, ForeignKey('Tasks.TaskID'), nullable=False)  
-    AssigneeID = Column(Integer, ForeignKey('Users.UserID'), nullable=False)  
-    AssignedBy = Column(Integer, ForeignKey('Users.UserID'), nullable=False) 
-    dateAssigned = Column(DateTime, default=datetime.utcnow)
+    TaskID = Column(Integer, ForeignKey('Tasks.TaskID'), nullable=False)
+    AssigneeID = Column(Integer, ForeignKey('Users.UserID'), nullable=False)
+    AssignedBy = Column(Integer, ForeignKey('Users.UserID'), nullable=False)
+    dateAssigned = Column(DateTime(timezone=False), server_default=func.now())
 
     task = relationship("Task", back_populates="assignments")
     assignee = relationship(
@@ -104,10 +105,10 @@ class Comment(Base):
     __tablename__ = 'Comments'
 
     CommentID = Column(Integer, primary_key=True, autoincrement=True)
-    TaskID = Column(Integer, ForeignKey('Tasks.TaskID'), nullable=False)  
-    UserID = Column(Integer, ForeignKey('Users.UserID'), nullable=False)  
-    dateCommented = Column(DateTime, default=datetime.utcnow)
-    text = Column(String, nullable=False)  
+    TaskID = Column(Integer, ForeignKey('Tasks.TaskID'), nullable=False)
+    UserID = Column(Integer, ForeignKey('Users.UserID'), nullable=False)
+    dateCommented = Column(DateTime(timezone=False), server_default=func.now())
+    text = Column(String, nullable=False)
 
     task = relationship("Task", back_populates="comments")
     user = relationship("User", back_populates="comments")

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import OperationalError
 
-from routes import users, task
+from routes import users, task, login
 from utils.database import engine
 from models import models
 import logging
@@ -16,8 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 app = FastAPI(title="KanbanGPT")
 app.include_router(users.router, prefix="/api", tags=["Users"])
 app.include_router(task.router, prefix="/api", tags=["Tasks"])
-
-
+app.include_router(login.router, prefix="", tags=["Login"])
 
 origins = ["*"]
 
