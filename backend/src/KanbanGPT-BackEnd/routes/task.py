@@ -54,7 +54,7 @@ def create_task(
         raise HTTPException(status_code=400, detail="Invalid task description")
 
     try:
-        # ai_response = gpt.generate_guidance_for_task(task.title, task.description)
+        ai_response = gpt.generate_guidance_for_task(task.title, task.description)
 
         new_task = Task(
             ColumnID=task.ColumnID,
@@ -64,10 +64,8 @@ def create_task(
         )
 
         db.add(new_task)
-        db.commit()
-        db.refresh(new_task)
-        db.close()
-        """
+        db.flush()
+
         ai_entry = AITaskDirection(
             projectID=new_task.column.ProjectID,
             taskID=new_task.TaskID,
@@ -78,7 +76,6 @@ def create_task(
         db.commit()
         db.refresh(new_task)
         db.refresh(ai_entry)
-        """
 
     except Exception as e:
         db.rollback()
@@ -92,7 +89,7 @@ def create_task(
     return {
         "message": "Task created successfully",
         "taskID": new_task.TaskID,
-        # "aiResponse": ai_response
+        "aiResponse": ai_response
     }
 
 '''
