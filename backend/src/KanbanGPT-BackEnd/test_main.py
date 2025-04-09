@@ -18,12 +18,28 @@ def get_user_id_by_email(email: str) -> int:
         return user.UserID
     return None
 
+# Utility function for getting jwt token associated with user
+def get_jwt_token(username: str, password: str) -> str:
+    response = client.post(
+        "/login",
+        data={"username": username, "password": password},
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    assert response.status_code == 200
+    return response.json()["access_token"]
+
 # Utility functions for clearing DB after tests
 def clear_db():
     db = SessionLocal()
     db.query(AITaskDirection).delete()
     db.query(Task).delete()
-    db.query(User).delete()
+    '''
+    *****************
+    THIS IS TEMPORARY UNTIL WE HAVE PROJECT CREATION/ COLUMN CREATION APIS
+    IN ORDER TO NOT REMOVE ALL PROJECTS/ COLUMNS WHEN DELETING USERS
+    *****************
+    '''
+    db.query(User).filter(User.UserID != 44).delete()
     db.commit()
     db.close()
 
@@ -175,37 +191,23 @@ def test_create_task_success():
     )
     assert response.status_code == 201
 
-    # Get the correct UserID dynamically after user creation
-    user_id = get_user_id_by_email("taskuser@example.com")
-    assert user_id is not None
+    # Get JWT token
+    token = get_jwt_token("taskuser", "P@ssword1")
 
-    # Create a task successfully
+    # Create task
     response = client.post(
         "/api/tasks/",
         json={
-            "ColumnID": 1,  # Make sure the column exists in your database
-            "CreatedBy": user_id,  # Dynamically insert the correct user ID
+            "ColumnID": 1,
             "title": "My First Task",
             "description": "This is a test task"
         },
+        headers={"Authorization": f"Bearer {token}"}
     )
 
     print(response.json())
     assert response.status_code == 200
     assert response.json()["message"] == "Task created successfully"
-
-def test_create_task_user_not_found():
-    response = client.post(
-        "/api/tasks/",
-        json={
-            "ColumnID": 1,
-            "CreatedBy": 999,  # Invalid user ID
-            "title": "Task Without User",
-            "description": "Invalid user"
-        },
-    )
-    assert response.status_code == 404
-    assert response.json()["detail"] == "User does not exist"
 
 def test_create_task_column_not_found():
     # Create a user first
@@ -219,20 +221,20 @@ def test_create_task_column_not_found():
         },
     )
 
-    # Get the correct UserID dynamically after user creation
-    user_id = get_user_id_by_email("taskuser2@example.com")
-    assert user_id is not None
+    # Get JWT token
+    token = get_jwt_token("taskuser2", "P@ssword1")
 
-    # Create task with invalid ColumnID
+    # Create task
     response = client.post(
         "/api/tasks/",
         json={
-            "ColumnID": 999,  # Invalid column ID
-            "CreatedBy": user_id,
-            "title": "Task With Invalid Column",
-            "description": "Invalid column test"
+            "ColumnID": 999,
+            "title": "My First Task",
+            "description": "This is a test task"
         },
+        headers={"Authorization": f"Bearer {token}"}
     )
+
     print(response.json())
     assert response.status_code == 404
     assert response.json()["detail"] == "Column does not exist"
@@ -249,19 +251,18 @@ def test_create_task_invalid_title():
         },
     )
 
-    # Get the correct UserID dynamically after user creation
-    user_id = get_user_id_by_email("taskuser3@example.com")
-    assert user_id is not None
+    # Get JWT token
+    token = get_jwt_token("taskuser3", "P@ssword1")
 
-    # Create task with a title > 40 characters
+    # Create task
     response = client.post(
         "/api/tasks/",
         json={
             "ColumnID": 1,
-            "CreatedBy": user_id,
-            "title": "This title is way too long and exceeds 40 characters",
-            "description": "Valid description"
+            "title": "This title is way too long and exceeds 40 characters!",
+            "description": "This is a test task"
         },
+        headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid task title (max 40 characters)"
@@ -278,17 +279,17 @@ def test_create_task_missing_fields():
         },
     )
 
-    # Get the correct UserID dynamically after user creation
-    user_id = get_user_id_by_email("taskuser3@example.com")
-    assert user_id is not None
+    # Get JWT token
+    token = get_jwt_token("taskuser3", "P@ssword1")
 
+    # Create task
     response = client.post(
         "/api/tasks/",
         json={
             "ColumnID": 1,
-            "CreatedBy": user_id,
-            # Missing title and description
+            # This request is missing title/ description fields!
         },
+        headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 422
 
@@ -304,22 +305,24 @@ def test_create_task_empty_title():
         },
     )
 
-    # Get the correct UserID dynamically after user creation
-    user_id = get_user_id_by_email("taskuser3@example.com")
-    assert user_id is not None
+    # Get JWT token
+    token = get_jwt_token("taskuser3", "P@ssword1")
 
+    # Create task
     response = client.post(
         "/api/tasks/",
         json={
             "ColumnID": 1,
-            "CreatedBy": user_id,
-            "title": "",
-            "description": "Valid description"
+            "title": "", # Empty title!
+            "description": "This is a test task"
         },
+        headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid task title (max 40 characters)"
 
+# /tasks/ai apis ai is commented out
+'''
 def test_create_ai_task_success():
     # Create a user first
     client.post(
@@ -387,3 +390,4 @@ def test_create_ai_task_column_not_found():
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "Column not found"
+'''
