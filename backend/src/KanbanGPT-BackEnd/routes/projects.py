@@ -5,7 +5,7 @@ from typing import List
 from models.models import Project, ProjectColumn, User
 from utils.database import SessionLocal
 from utils import validators
-from utils.auth import get_current_user  # Your JWT auth dependency
+from utils.auth import get_current_user
 
 
 from classes.classes import ProjectCreate, ProjectResponse
@@ -44,7 +44,7 @@ def create_project(
     )
 
     db.add(new_project)
-    db.flush()  # Get project ID before commit
+    db.flush()  
 
     # Default columns
     default_columns = ["Backlog", "Assigned", "In-Progress", "Ready For Review", "Complete"]
