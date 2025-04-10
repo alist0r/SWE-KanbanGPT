@@ -1,36 +1,66 @@
-import axios from 'axios'
+import React, { useState } from 'react';
+import axios from 'axios';
 
-const post_login = () => {
-	//todo make login request
-}
+const Login = ({ swap_screen, swap_screen2 }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
 
-//temporary function names just to get things working, i know swap_screen2 is bad
-const login = (swap_screen: Function, swap_screen2: Function) => {
-	return () => {
-		return (
-			<>
-			<form>
-			 <label>Username: </label>
-			 <input name="username" />
-			 <br />
-			 <label>Password: </label>
-			 <input name="password" />
-			 <br />
-			 <button onClick={post_login}>
-			  login
-			 </button>
-			</form>
-			or
-			<br />
-			<button onClick={swap_screen}>
-			 create user
-			</button>
-			<button onClick={swap_screen2}>
-			 create task
-			</button>
-			</>
-		)
-	}
-}
+  // Handler for submitting the login form
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+  
+    // Prepare form data (not JSON)
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+  
+    try {
+      const response = await axios.post('http://localhost:8000/login', formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+  
+      console.log('Login response:', response.data);
+      setMessage('Login successful!');
+      // Save access token!
+      localStorage.setItem("access_token", response.data.access_token);
+    } catch (error) {
+      console.error('Login error:', error);
+      setMessage('Login failed. Please check your credentials and try again.');
+    }
+  };
+  
 
-export { login }
+  return (
+    <div>
+      <h2>Login</h2>
+      <form onSubmit={handleSubmit}>
+        <label>Username: </label>
+        <input
+          type="text"
+          name="username"
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+        />
+        <br />
+        <label>Password: </label>
+        <input
+          type="password"
+          name="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+        <br />
+        <button type="submit">Login</button>
+      </form>
+      {message && <p>{message}</p>}
+      <br />
+      <button onClick={swap_screen}>Create User</button>
+      <button onClick={swap_screen2}>Create Task</button>
+    </div>
+  );
+};
+
+export { Login };

@@ -3,14 +3,15 @@ from datetime import datetime
 
 
 class UserCreate(BaseModel):
-    username: str = Field(..., min_length=8)
+    username: str
     password: str
     email: str
     name: str
 
 class TaskCreate(BaseModel):
     ColumnID: int
-    CreatedBy: int
+    # CreatedBy is now automatically validated through our authentication
+    # CreatedBy: int
     title: str
     description: str
 

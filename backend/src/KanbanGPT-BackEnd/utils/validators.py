@@ -36,7 +36,7 @@ def validate_column_exists(db: Session, column_id: int):
     return db.query(ProjectColumn).filter(ProjectColumn.ColumnID == column_id).first() is not None
 
 def validate_task_title(title: str):
-    return isinstance(title, str) and len(title) <= 40
+    return isinstance(title, str) and 0 < len(title) <= 40
 
 def validate_description(description: str):
     return isinstance(description, str) and len(description.strip()) > 0
