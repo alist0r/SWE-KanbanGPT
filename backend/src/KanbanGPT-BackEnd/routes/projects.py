@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from models.models import Project, ProjectColumn, User
+from models.models import Project, ProjectColumn, User, ProjectHasUsers
 from utils.database import SessionLocal
 from utils import validators
 from utils.auth import get_current_user
@@ -31,27 +31,43 @@ def create_project(
 
     '''comment this next line out after we get user authentication fully functional'''
     current_user = User(UserID=1)
-    # Validate assigned users
-    for user_id in project.assigned_users:
-        if not validators.validate_user_exists(db, user_id):
-            raise HTTPException(status_code=404, detail=f"Assigned user {user_id} does not exist")
 
-    # Create project
-    new_project = Project(
-        Creator=current_user.UserID,
-        title=project.title,
-        description=project.description
-    )
+    try:
+        # Validate assigned users
+        for user_id in project.assigned_users:
+            if not validators.validate_user_exists(db, user_id):
+                raise HTTPException(status_code=404, detail=f"Assigned user {user_id} does not exist")
 
-    db.add(new_project)
-    db.flush()  
+        # Create project
+        new_project = Project(
+            Creator=current_user.UserID,
+            title=project.title,
+            description=project.description
+        )
 
-    # Default columns
-    default_columns = ["Backlog", "Assigned", "In-Progress", "Ready For Review", "Complete"]
-    for col_title in default_columns:
-        db.add(ProjectColumn(ProjectID=new_project.ProjectID, title=col_title))
+        db.add(new_project)
+        db.flush()
 
-    db.commit()
-    db.refresh(new_project)
+        # Default columns
+        default_columns = ["Backlog", "Assigned", "In-Progress", "Ready For Review", "Complete"]
+        for col_title in default_columns:
+            db.add(ProjectColumn(ProjectID=new_project.ProjectID, title=col_title))
+
+        assigned_user_ids = set(project.assigned_users)
+        assigned_user_ids.add(current_user.UserID)
+
+        for user_id in assigned_user_ids:
+            db.add(ProjectHasUsers(ProjectID=new_project.ProjectID, user_id=user_id))
+
+        db.commit()
+        db.refresh(new_project)
+    except Exception as e:
+        db.rollback()
+        print("=" * 80)
+        print("EXCEPTION CAUGHT IN /projects/")
+        import traceback
+        traceback.print_exc()
+        print("=" * 80)
+        raise HTTPException(status_code=500, detail="Could not create project")
 
     return {"message": "Project created successfully", "project_id": new_project.ProjectID}
