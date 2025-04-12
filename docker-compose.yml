@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: kanban-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=!QAZ2wsx
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./backend/src/KanbanGPT-BackEnd/kanbanDDLv4.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./backend/src/KanbanGPT-BackEnd/kanbanDDMv1.sql:/docker-entrypoint-initdb.d/2_seed_data.sql
+  backend:
+    build:
+      context: ./backend/src/KanbanGPT-BackEnd
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/src/KanbanGPT-BackEnd:/app
+    container_name: kanban-backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_URL=mysql+pymysql://root:!QAZ2wsx@db:3306/TaskManagement
