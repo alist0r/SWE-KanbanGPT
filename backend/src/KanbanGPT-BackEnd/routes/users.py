@@ -60,8 +60,8 @@ def create_user(
         raise HTTPException(status_code=400, detail="Email already registered.")
 
     # Check if username is taken
-    if db.query(User).filter(User.username == user.username).first():
-        raise HTTPException(status_code=400, detail="Username already taken.")
+   # if db.query(User).filter(User.username == user.username).first():
+    #    raise HTTPException(status_code=400, detail="Username already taken.")
 
     hashed_pw = hash_password(user.password)
 

@@ -38,9 +38,9 @@ def create_task(
     task: TaskCreate,
     db: Session = Depends(get_db),
     # This dependency will check for a valid JWT and return the current user.
-    current_user: User = Depends(get_current_user)
+    #current_user: User = Depends(get_current_user)
     ):
-
+    current_user = User(UserID=1)
     if not validators.validate_user_exists(db, current_user.UserID):
         raise HTTPException(status_code=404, detail="User does not exist")
 

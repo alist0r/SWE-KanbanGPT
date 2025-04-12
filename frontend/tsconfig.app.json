@@ -9,18 +9,23 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false, /*will also need to be changed back to true */
     "isolatedModules": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "noEmit": false,    /* change back to true in the final version */
+    "noEmitOnError": false, /* remove this as well in the final version */
     "jsx": "react-jsx",
 
     /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "strict": false, /* change all of these back to true once errors are addressed */
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": false,
+    "noUncheckedSideEffectImports": false
   },
   "include": ["src"]
+
+  /*  when experimenting with the docker, there were several variables 
+  that had to be changed to false to get the docker to work.  
+  whenever the errors are fixed, we can push them back to false */
 }

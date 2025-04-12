@@ -2,11 +2,11 @@ import axios from 'axios'
 import { useState } from 'react'
 
 const create_submission_handler = (url: string) => {
-	return (formData) => {
+	return (formData: FormData) => {
 	  const json: any = {};
 	  // Placeholder values
 	  json["ColumnID"] = 1;
-	  formData.forEach((value, key) => {
+	  formData.forEach((value: FormDataEntryValue, key: string) => {
 		json[key] = value;
 	  });
   
@@ -19,18 +19,22 @@ const create_submission_handler = (url: string) => {
 		  Authorization: `Bearer ${token}`,
 		},
 	  })
-	  .then(function (response) {
-		console.log(response);
-	  })
-	  .catch(function (error) {
-		console.log(error);
-	  });
+	  .then((response) => console.log(response))
+	  .catch((error) => console.log(error));
 	};
   };
   
 
-const create_task = (swap_screen: Function) => {
+const create_task = (swap_screen: () => void) => {
 	const submission_handler = create_submission_handler("http://localhost:8000/api/tasks");
+
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		const form = event.currentTarget;
+		const formData = new FormData(form);
+		submission_handler(formData);
+	};
+
 	return () => {
 		return (
 			<>

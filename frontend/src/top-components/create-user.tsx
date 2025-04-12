@@ -10,20 +10,16 @@ import { useState } from 'react'
  * @return {Function} A function that makes a web request based off of html
  * 	fields.
  */
-const create_submission_handler = (url: String) => {
-	return (formData) => {
-		const json = {};
-		formData.forEach((value, key) => {
+const create_submission_handler = (url: string) => {
+	return (formData: FormData) => {
+		const json: any = {};
+		formData.forEach((value: FormDataEntryValue, key: string) => {
 			json[key] = value;
 		});
 		console.log(json)
 		axios.post(url, json)
-		.then(function (response) {
-			console.log(response);
-		})
-		.catch(function (error) {
-			console.log(error);
-		});
+		.then((response) => console.log(response))
+		.catch((error) => console.log(error));
 	}
 }
 
@@ -36,6 +32,14 @@ const create_submission_handler = (url: String) => {
  */
 const create_user = (swap_screen: Function) => {
 	const submission_handler = create_submission_handler("http://localhost:8000/api/users");
+
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		const form = event.currentTarget;
+		const formData = new FormData(form);
+		submission_handler(formData);
+	};
+
 	return () => {
 		return (
 			<>
@@ -52,7 +56,7 @@ const create_user = (swap_screen: Function) => {
 			 </form>
 			 or
 			 <br />
-			 <button onClick={swap_screen}>return to login</button>
+			 <button onClick={() => swap_screen}>return to login</button>
 			</>
 		)
 

@@ -57,7 +57,7 @@ def create_project(
         assigned_user_ids.add(current_user.UserID)
 
         for user_id in assigned_user_ids:
-            db.add(ProjectHasUsers(ProjectID=new_project.ProjectID, user_id=user_id))
+            db.add(ProjectHasUsers(ProjectID=new_project.ProjectID, UserID=user_id))
 
         db.commit()
         db.refresh(new_project)
