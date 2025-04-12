@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Optional, List
 
 
 class UserCreate(BaseModel):
@@ -15,3 +16,11 @@ class TaskCreate(BaseModel):
     title: str
     description: str
 
+class ProjectCreate(BaseModel):
+    title: str
+    description: str
+    assigned_users: Optional[List[int]] = []  # User IDs
+
+class ProjectResponse(BaseModel):
+    message: str
+    project_id: int

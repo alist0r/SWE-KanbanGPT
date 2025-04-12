@@ -125,3 +125,14 @@ class AITaskDirection(Base):
 
     project = relationship("Project", back_populates="ai_responses")
     task = relationship("Task", back_populates="ai_response")
+
+
+class ProjectHasUsers(Base):
+    __tablename__ = 'projectHasUsers'
+
+    ProjectID = Column(Integer, ForeignKey('Projects.ProjectID', ondelete='CASCADE'), primary_key=True)
+    UserID = Column(Integer, ForeignKey('Users.UserID', ondelete='CASCADE'), primary_key=True)
+    dateAssigned = Column(DateTime(timezone=False), server_default=func.now())
+
+    project = relationship("Project", backref="project_members")
+    user = relationship("User", backref="user_projects")
