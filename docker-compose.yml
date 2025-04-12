@@ -25,12 +25,3 @@ services:
       - db
     environment:
       - DB_URL=mysql+pymysql://root:!QAZ2wsx@db:3306/TaskManagement
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: kanban-frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
