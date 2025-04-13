@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from models.models import User
+from models.models import User, ProjectHasUsers, Project, Task, Assignment
 from classes.classes import UserCreate
 from utils.database import SessionLocal
 from utils import validators
 from utils.security import hash_password
 from sqlalchemy.exc import IntegrityError
+from typing import List
 
 # Import the JWT-based authentication dependency
 from utils.auth import get_current_user
@@ -82,3 +83,30 @@ def create_user(
 
     return {"message": "User created successfully", "user_id": new_user.UserID}
 
+@router.get("/users/{user_id}/projects", response_model=List[str])
+def get_user_projects(
+        user_id: int,
+        # current_user: User = Depends(get_current_user), # uncomment this line when full release is ready
+        db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.UserID == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    project_ids = db.query(ProjectHasUsers.ProjectID).filter(ProjectHasUsers.UserID == user_id).all()
+    if not project_ids:
+        raise HTTPException(status_code=404, detail="User is not assigned to any projects")
+
+    projects = db.query(Project).filter(Project.ProjectID.in_([pid[0] for pid in project_ids])).all()
+    return [p.title for p in projects]
+
+@router.get("/users/{user_id}/assignments", response_model=List[str])
+def get_user_assignments(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.UserID == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    assignments = db.query(Task).join(Assignment).filter(Assignment.AssigneeID == user_id).all()
+    if not assignments:
+        raise HTTPException(status_code=404, detail="User is not assigned to any tasks")
+
+    return [task.title for task in assignments]
