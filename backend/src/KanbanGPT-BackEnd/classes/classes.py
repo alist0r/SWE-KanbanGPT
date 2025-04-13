@@ -24,3 +24,7 @@ class ProjectCreate(BaseModel):
 class ProjectResponse(BaseModel):
     message: str
     project_id: int
+
+class AssignmentCreate(BaseModel):
+    task_id: int
+    assignees: List[int]

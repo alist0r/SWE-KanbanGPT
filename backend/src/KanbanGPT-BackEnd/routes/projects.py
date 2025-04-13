@@ -25,10 +25,9 @@ def get_db():
 @router.post("/projects/", response_model=ProjectResponse)
 def create_project(
     project: ProjectCreate,
-    db: Session = Depends(get_db),
-    #current_user: User = Depends(get_current_user)
-
-):
+    #current_user: User = Depends(get_current_user), # uncomment this in final release
+    db: Session = Depends(get_db)
+    ):
 
     '''comment this next line out after we get user authentication fully functional'''
     current_user = User(UserID=1)
