@@ -5,14 +5,15 @@ import './App.css';
 
 // Import your components with uppercase names
 import { Login } from './top-components/login';  // Renamed login -> Login
+import { Board_select } from './top-components/board-view';
 import { create_user } from './top-components/create-user'; // Renamed create_user -> CreateUser
 import { create_task } from './top-components/create-task'; // Renamed create_task -> CreateTask
 
 enum Pages {
   login,
   create_user,
-  board,
-  task,
+  board_select,
+  board_overview,
   make_task,
 }
 
@@ -23,6 +24,7 @@ enum Pages {
  */
 const App = () => {
   const [page, setPage] = useState(Pages.login);
+  const [board, setBoard] = useState(0);
 
   const walk_create_user = () => {
     setPage(Pages.create_user);
@@ -36,19 +38,29 @@ const App = () => {
     setPage(Pages.make_task);
   };
 
+  const walk_board_select = () => {
+    setPage(Pages.board_select);
+  }
+
+  const walk_board_view = (board_id: int) => {
+    setPage(Pages.board_overview);
+    setBoard(board_id);
+  }
+
+
   // Use a component container that you render based on the current page
   let Main = () => <></>;
   switch (page) {
     case Pages.login:
       Main = () => (
-        <Login swap_screen={walk_create_user} swap_screen2={walk_create_task} />
+        <Login create_user={walk_create_user} create_task={walk_create_task} board_select={walk_board_select} />
       );
       break;
     case Pages.create_user:
 		Main = create_user(walk_login);
       break;
-    case Pages.board:
-      Main = () => <div>Board Page</div>;
+    case Pages.board_select:
+      Main = Board_select(walk_board_view);
       break;
     case Pages.task:
       Main = () => <div>Task Page</div>;

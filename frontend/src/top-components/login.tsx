@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Login = ({ swap_screen, swap_screen2 }) => {
+const Login = ({create_user, create_task, board_select}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -24,6 +24,7 @@ const Login = ({ swap_screen, swap_screen2 }) => {
   
       console.log('Login response:', response.data);
       setMessage('Login successful!');
+      board_select();
       // Save access token!
       localStorage.setItem("access_token", response.data.access_token);
     } catch (error) {
@@ -57,8 +58,8 @@ const Login = ({ swap_screen, swap_screen2 }) => {
       </form>
       {message && <p>{message}</p>}
       <br />
-      <button onClick={swap_screen}>Create User</button>
-      <button onClick={swap_screen2}>Create Task</button>
+      <button onClick={create_user}>Create User</button>
+      <button onClick={create_task}>Create Task</button>
     </div>
   );
 };
