@@ -8,6 +8,8 @@ import { Login } from './top-components/login';  // Renamed login -> Login
 import { Board_select } from './top-components/board-view';
 import { create_user } from './top-components/create-user'; // Renamed create_user -> CreateUser
 import { create_task } from './top-components/create-task'; // Renamed create_task -> CreateTask
+import { Board_View } from './top-components/list-view';
+
 
 enum Pages {
   login,
@@ -74,7 +76,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <Main />
+     <Main />
     </div>
   );
 };
