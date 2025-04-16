@@ -16,6 +16,11 @@ class TaskCreate(BaseModel):
     title: str
     description: str
 
+class TaskMoveRequest(BaseModel):
+    task_id: int
+    new_column_id: int
+
+
 class ProjectCreate(BaseModel):
     title: str
     description: str
