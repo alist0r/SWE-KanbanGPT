@@ -3,8 +3,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from utils.database import SessionLocal
-from classes.classes import TaskCreate
-from models.models import Task, AITaskDirection
+from classes.classes import TaskCreate, TaskMoveRequest
+from models.models import Task, AITaskDirection, ProjectColumn
 from utils import validators, gpt
 import traceback
 
@@ -36,9 +36,9 @@ returns the ai response, taskID and the aiResponse
 @router.post("/tasks/")
 def create_task(
     task: TaskCreate,
+    # current_user: User = Depends(get_current_user)  # uncomment this during final release
     db: Session = Depends(get_db),
-    # This dependency will check for a valid JWT and return the current user.
-    current_user: User = Depends(get_current_user)
+
     ):
 
     if not validators.validate_user_exists(db, current_user.UserID):
@@ -91,6 +91,35 @@ def create_task(
         "taskID": new_task.TaskID,
         "aiResponse": ai_response
     }
+
+'''
+Allows moving a task from one column to another.  New column must be inside the same project.
+'''
+@router.put("/tasks/move")
+def move_task_to_column(
+        request: TaskMoveRequest,
+        # current_user: User = Depends(get_current_user),   # uncomment this in final release
+        db: Session = Depends(get_db)
+):
+    task = db.query(Task).filter(Task.TaskID == request.task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    current_column = db.query(ProjectColumn).filter(ProjectColumn.ColumnID == task.ColumnID).first()
+    new_column = db.query(ProjectColumn).filter(ProjectColumn.ColumnID == request.new_column_id).first()
+
+    if not new_column:
+        raise HTTPException(status_code=404, detail="Target column not found")
+
+    if current_column.ProjectID != new_column.ProjectID:
+        raise HTTPException(status_code=400, detail="Cannot move task to a column in a different project")
+
+    task.ColumnID = request.new_column_id
+    db.commit()
+    db.refresh(task)
+
+    return {"message": "Task moved successfully", "task_id": task.TaskID, "new_column_id": task.ColumnID}
+
 
 '''
 @router.post("/tasks/ai")

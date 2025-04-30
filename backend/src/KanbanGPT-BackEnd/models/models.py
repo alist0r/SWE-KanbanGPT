@@ -75,10 +75,9 @@ class Task(Base):
     comments = relationship("Comment", back_populates="task")
     ai_response = relationship("AITaskDirection", back_populates="task")
 
-
 # Assignments Table
 class Assignment(Base):
-    __tablename__ = 'Assignments'
+    __tablename__ = 'assignments'
 
     AssignmentID = Column(Integer, primary_key=True, autoincrement=True)
     TaskID = Column(Integer, ForeignKey('Tasks.TaskID'), nullable=False)
@@ -132,7 +131,7 @@ class ProjectHasUsers(Base):
 
     ProjectID = Column(Integer, ForeignKey('Projects.ProjectID', ondelete='CASCADE'), primary_key=True)
     UserID = Column(Integer, ForeignKey('Users.UserID', ondelete='CASCADE'), primary_key=True)
-    dateAssigned = Column(DateTime(timezone=False), server_default=func.now())
+    # dateAssigned = Column(DateTime(timezone=False), server_default=func.now())
 
     project = relationship("Project", backref="project_members")
     user = relationship("User", backref="user_projects")
