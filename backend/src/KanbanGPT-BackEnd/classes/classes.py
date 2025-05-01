@@ -33,3 +33,8 @@ class ProjectResponse(BaseModel):
 class AssignmentCreate(BaseModel):
     task_id: int
     assignees: List[int]
+
+class LoginRequest(BaseModel):
+    username: Optional[str]
+    email: Optional[str]
+    password: str
