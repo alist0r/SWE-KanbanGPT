@@ -68,6 +68,7 @@ def test_ping():
 # Test Cases for /users
 # =====================
 
+# UC1 All fields valid
 def test_create_user_success():
     response = client.post(
         "/api/users",
@@ -81,6 +82,88 @@ def test_create_user_success():
     assert response.status_code == 201
     assert response.json()["message"] == "User created successfully"
 
+# UC2 Email incorrect format
+def test_create_user_invalid_email():
+    response = client.post(
+        "/api/users",
+        json={
+            "username": "validuser",
+            "password": "P@ssword1",
+            "email": "invalid-email",
+            "name": "User"
+        },
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid email format."
+
+# UC3 Username incorrect format (too short)
+def test_create_user_invalid_username_short():
+    response = client.post(
+        "/api/users",
+        json={
+            "username": "u1",
+            "password": "P@ssword1",
+            "email": "user@example.com",
+            "name": "Invalid User"
+        },
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Username must be between 8 and 32 characters and alphanumeric."
+
+# UC4 Username incorrect format (too long)
+def test_create_user_invalid_username_long():
+    response = client.post(
+        "/api/users",
+        json={
+            "username": "averyverylongusernamethatexceedslimit",
+            "password": "P@ssword1",
+            "email": "user@example.com",
+            "name": "Invalid User"
+        },
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Username must be between 8 and 32 characters and alphanumeric."
+
+# UC5 Password incorrect format (too short, missing special chars, digit)
+def test_create_user_invalid_password_short():
+    response = client.post(
+        "/api/users",
+        json={
+            "username": "validuser1",
+            "password": "simple",  # No special char, no digit
+            "email": "validuser@example.com",
+            "name": "Valid User"
+        },
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Password must be 6–12 characters with at least one letter, number, and special character."
+
+# UC6 Password incorrect format (too long)
+def test_create_user_invalid_password_long():
+    response = client.post(
+        "/api/users",
+        json={
+            "username": "validuser1",
+            "password": "a"*256,  # too long
+            "email": "validuser@example.com",
+            "name": "Valid User"
+        },
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Password must be 6–12 characters with at least one letter, number, and special character."
+
+# UC7 Empty fields
+def test_create_user_missing_fields():
+    response = client.post(
+        "/api/users",
+        json={
+            "username": "missingfieldsuser"
+            # Missing password, email, and name
+        },
+    )
+    assert response.status_code == 422
+
+# UC8 Duplicate Email
 def test_create_user_duplicate_email():
     client.post(
         "/api/users",
@@ -103,55 +186,7 @@ def test_create_user_duplicate_email():
     assert response.status_code == 400
     assert response.json()["detail"] == "Email already registered."
 
-def test_create_user_invalid_username():
-    response = client.post(
-        "/api/users",
-        json={
-            "username": "u1",
-            "password": "P@ssword1",
-            "email": "user@example.com",
-            "name": "Invalid User"
-        },
-    )
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Username must be between 8 and 32 characters and alphanumeric."
-
-def test_create_user_invalid_email():
-    response = client.post(
-        "/api/users",
-        json={
-            "username": "validuser",
-            "password": "P@ssword1",
-            "email": "invalid-email",
-            "name": "User"
-        },
-    )
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Invalid email format."
-
-def test_create_user_missing_fields():
-    response = client.post(
-        "/api/users",
-        json={
-            "username": "missingfieldsuser"
-            # Missing password, email, and name
-        },
-    )
-    assert response.status_code == 422
-
-def test_create_user_invalid_password():
-    response = client.post(
-        "/api/users",
-        json={
-            "username": "validuser1",
-            "password": "simple",  # No special char, no digit
-            "email": "validuser@example.com",
-            "name": "Valid User"
-        },
-    )
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Password must be 6–12 characters with at least one letter, number, and special character."
-
+# UC9 Duplicate Email
 def test_create_user_duplicate_username():
     client.post(
         "/api/users",
@@ -178,6 +213,7 @@ def test_create_user_duplicate_username():
 # Test Cases for /tasks
 # =====================
 
+# TC1 All fields valid
 def test_create_task_success():
     # Create a user first
     response = client.post(
@@ -209,6 +245,40 @@ def test_create_task_success():
     assert response.status_code == 200
     assert response.json()["message"] == "Task created successfully"
 
+# TC2 Title is empty
+def test_create_task_empty_title():
+    # Create a user first
+    client.post(
+        "/api/users",
+        json={
+            "username": "taskuser3",
+            "password": "P@ssword1",
+            "email": "taskuser3@example.com",
+            "name": "Task User"
+        },
+    )
+
+    # Get JWT token
+    token = get_jwt_token("taskuser3", "P@ssword1")
+
+    # Create task
+    response = client.post(
+        "/api/tasks/",
+        json={
+            "ColumnID": 1,
+            "title": "", # Empty title!
+            "description": "This is a test task"
+        },
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid task title (max 40 characters)"
+
+# TC 3-5 Have been revised from the report for sprint 3,
+# as there is not priority, deadline, and assignees is a
+# use case to be implemented in the future.
+
+# TC3 Invalid Column
 def test_create_task_column_not_found():
     # Create a user first
     client.post(
@@ -239,6 +309,7 @@ def test_create_task_column_not_found():
     assert response.status_code == 404
     assert response.json()["detail"] == "Column does not exist"
 
+# TC4 Invalid Title
 def test_create_task_invalid_title():
     # Create a user first
     client.post(
@@ -267,6 +338,7 @@ def test_create_task_invalid_title():
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid task title (max 40 characters)"
 
+# TC5 Missing Fields
 def test_create_task_missing_fields():
     # Create a user first
     client.post(
@@ -292,34 +364,6 @@ def test_create_task_missing_fields():
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 422
-
-def test_create_task_empty_title():
-    # Create a user first
-    client.post(
-        "/api/users",
-        json={
-            "username": "taskuser3",
-            "password": "P@ssword1",
-            "email": "taskuser3@example.com",
-            "name": "Task User"
-        },
-    )
-
-    # Get JWT token
-    token = get_jwt_token("taskuser3", "P@ssword1")
-
-    # Create task
-    response = client.post(
-        "/api/tasks/",
-        json={
-            "ColumnID": 1,
-            "title": "", # Empty title!
-            "description": "This is a test task"
-        },
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Invalid task title (max 40 characters)"
 
 # /tasks/ai apis ai is commented out
 '''
