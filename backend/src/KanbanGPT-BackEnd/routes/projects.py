@@ -25,19 +25,25 @@ def get_db():
 @router.post("/projects/", response_model=ProjectResponse)
 def create_project(
     project: ProjectCreate,
-    #current_user: User = Depends(get_current_user), # uncomment this in final release
+    current_user: User = Depends(get_current_user), # uncomment this in final release
     db: Session = Depends(get_db)
     ):
 
     '''comment this next line out after we get user authentication fully functional'''
-    current_user = User(UserID=1)
+    # current_user = User(UserID=1)
+
+    # Validate assigned users
+    for user_id in project.assigned_users:
+        if not validators.validate_user_exists(db, user_id):
+            raise HTTPException(status_code=404, detail=f"Assigned user {user_id} does not exist")
+
+    if not validators.validate_title(project.title):
+        raise HTTPException(status_code=400, detail="Invalid task title (max 40 characters)")
+
+    if not validators.validate_description(project.description):
+        raise HTTPException(status_code=400, detail="Invalid task description")
 
     try:
-        # Validate assigned users
-        for user_id in project.assigned_users:
-            if not validators.validate_user_exists(db, user_id):
-                raise HTTPException(status_code=404, detail=f"Assigned user {user_id} does not exist")
-
         # Create project
         new_project = Project(
             Creator=current_user.UserID,
@@ -136,3 +142,21 @@ def get_project_tasks(
         for task in tasks
     ]
 
+'''
+This get_project_columns queries the database for all columns related to a projectID.
+'''
+
+@router.get("/projects/{project_id}/columns", response_model=List[dict])
+def get_project_columns(
+    project_id: int,
+    # current_user: User = Depends(get_current_user),  # Uncomment in production
+    db: Session = Depends(get_db)
+):
+    # Check if the project exists
+    project = db.query(Project).filter(Project.ProjectID == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    columns = db.query(ProjectColumn).filter(ProjectColumn.ProjectID == project_id).all()
+
+    return [{"ColumnID": col.ColumnID, "title": col.title} for col in columns]
