@@ -37,7 +37,7 @@ const Board_select = (walk_board_view: Function) => {
 		data();
 	},[]); //??? wtf even is react
 	if (!res) {
-		return <div>fuck you</div>;
+		return <div>loading...</div>;
 	}
 	const New_Project = create_board();
 	const token = localStorage.getItem("access_token");
