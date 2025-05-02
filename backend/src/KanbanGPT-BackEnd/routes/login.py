@@ -51,8 +51,8 @@ async def login(
         )
 
     # Generate tokens using your utility functions
-    access_token = create_access_token(subject=user.username)
-    refresh_token = create_refresh_token(subject=user.username)
+    access_token = create_access_token(subject=str(user.UserID))
+    refresh_token = create_refresh_token(subject=str(user.UserID))
 
     # Return tokens with a token type (bearer)
     return {
