@@ -27,6 +27,7 @@ enum Pages {
 const App = () => {
   const [page, setPage] = useState(Pages.login);
   const [board, setBoard] = useState(0);
+  const [projects, setProjects] = useState(null)
 
   const walk_create_user = () => {
     setPage(Pages.create_user);
@@ -62,7 +63,7 @@ const App = () => {
 		Main = create_user(walk_login);
       break;
     case Pages.board_select:
-      Main = Board_select(walk_board_view);
+      Main = Board_select(walk_board_view, projects, setProjects);
       break;
     case Pages.task:
       Main = () => <div>Task Page</div>;

@@ -27,27 +27,26 @@ const get_projects = async () => {
 }
 
 
-const Board_select = (walk_board_view: Function) => {
-	const [res, setRes] = useState(null);
-	useEffect(() => {
+const Board_select = (walk_board_view: Function, res: Array, setRes: Function) => {
+	if (!res) {
 		const data = async () => {
 			const d = await get_projects()
 			setRes(d);
 		};
 		data();
-	},[]); //??? wtf even is react
-	if (!res) {
-		return <div>loading...</div>;
+		return () => {<div>loading...</div>};
 	}
 	const New_Project = create_board();
 	const token = localStorage.getItem("access_token");
 	console.log(token);
-	return (
-		<>
-		 <New_Project />
-		 <Board_Container boards={res} />
-		</>
-	)
+	return () => {
+		return (
+			<>
+			 <New_Project />
+			 <Board_Container boards={res} />
+			</>
+		)
+	}
 }
 
 export { Board_select }
