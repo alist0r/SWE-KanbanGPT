@@ -97,10 +97,13 @@ def get_user_projects(
         raise HTTPException(status_code=404, detail="User is not assigned to any projects")
 
     projects = db.query(Project).filter(Project.ProjectID.in_([pid[0] for pid in project_ids])).all()
-    return [p.title for p in projects]
+    return [{"project_id": p.ProjectID, "title": p.title} for p in projects]
 
 @router.get("/users/{user_id}/assignments", response_model=List[str])
-def get_user_assignments(user_id: int, db: Session = Depends(get_db)):
+def get_user_assignments(
+        user_id: int,
+        # current_user: User = Depends(get_current_user), # uncomment this line when full release is ready
+        db: Session = Depends(get_db)):
     user = db.query(User).filter(User.UserID == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")

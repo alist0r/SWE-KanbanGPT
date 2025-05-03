@@ -33,3 +33,7 @@ class ProjectResponse(BaseModel):
 class AssignmentCreate(BaseModel):
     task_id: int
     assignees: List[int]
+
+class ProjectSummary(BaseModel):
+    project_id: int
+    title: str
