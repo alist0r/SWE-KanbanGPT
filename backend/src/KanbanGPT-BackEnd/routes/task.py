@@ -36,9 +36,8 @@ returns the ai response, taskID and the aiResponse
 @router.post("/tasks/")
 def create_task(
     task: TaskCreate,
-    # current_user: User = Depends(get_current_user)  # uncomment this during final release
-    db: Session = Depends(get_db),
-
+    current_user: User = Depends(get_current_user),  # uncomment this during final release
+    db: Session = Depends(get_db)
     ):
 
     if not validators.validate_user_exists(db, current_user.UserID):
@@ -47,7 +46,7 @@ def create_task(
     if not validators.validate_column_exists(db, task.ColumnID):
         raise HTTPException(status_code=404, detail="Column does not exist")
 
-    if not validators.validate_task_title(task.title):
+    if not validators.validate_title(task.title):
         raise HTTPException(status_code=400, detail="Invalid task title (max 40 characters)")
 
     if not validators.validate_description(task.description):
@@ -98,7 +97,7 @@ Allows moving a task from one column to another.  New column must be inside the 
 @router.put("/tasks/move")
 def move_task_to_column(
         request: TaskMoveRequest,
-        # current_user: User = Depends(get_current_user),   # uncomment this in final release
+        current_user: User = Depends(get_current_user),   # uncomment this in final release
         db: Session = Depends(get_db)
 ):
     task = db.query(Task).filter(Task.TaskID == request.task_id).first()

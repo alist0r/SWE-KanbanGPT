@@ -41,3 +41,9 @@ class ProjectSummary(BaseModel):
 class UserInfo(BaseModel):
     user_id: int
     username: str
+
+class LoginRequest(BaseModel):
+    username: Optional[str]
+    email: Optional[str]
+    password: str
+

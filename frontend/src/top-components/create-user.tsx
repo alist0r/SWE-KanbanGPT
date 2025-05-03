@@ -39,20 +39,24 @@ const create_user = (swap_screen: Function) => {
 	return () => {
 		return (
 			<>
-			 <form name="createUser" action={submission_handler}>
-			 <label>Username: </label>
-			 <input name="username" /><br />
-			 <label>Password: </label>
-			 <input name="password" /><br />
-			 <label>Name: </label>
-			 <input name="name" /><br />
-			 <label>Email: </label>
-			 <input name="email" /><br />
-			 <button>create</button>
-			 </form>
-			 or
-			 <br />
-			 <button onClick={swap_screen}>return to login</button>
+			<form name="createUser" onSubmit={(e) => {
+				e.preventDefault();  // Prevent default form submission
+				const form = e.target as HTMLFormElement;
+				submission_handler(new FormData(form));  // Pass form data to the handler
+				}}>
+				<label htmlFor="username">Username: </label>
+				<input name="username" id="username" /><br />
+				<label htmlFor="password">Password: </label>
+				<input name="password" id="password" /><br />
+				<label htmlFor="name">Name: </label>
+				<input name="name" id="name" /><br />
+				<label htmlFor="email">Email: </label>
+				<input name="email" id="email" /><br />
+				<button>create</button>
+			</form>
+			or
+			<br />
+			<button onClick={swap_screen}>return to login</button>
 			</>
 		)
 

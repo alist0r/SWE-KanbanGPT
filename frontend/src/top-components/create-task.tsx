@@ -35,10 +35,10 @@ const create_task = (swap_screen: Function) => {
 		return (
 			<>
 			 <form name="createTask" action={submission_handler}>
-			 <label>Title: </label>
-			 <input name="title" /><br />
-			 <label>Description: </label>
-			 <input name="description" /><br />
+			 <label htmlFor="title">Title: </label>
+			 <input name="title" id="title" /><br />
+			 <label htmlFor="description">Description: </label>
+			 <input name="description" id="description" /><br />
 			 <button>create!</button>
 			 </form>
 			 or

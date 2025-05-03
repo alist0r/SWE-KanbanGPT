@@ -49,10 +49,8 @@ async def get_current_user(db: db_dependency, token: str = Depends(reuseable_oau
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    print('payload sub: ', payload['sub'])
-    # extract user
-    user = db.query(models.models.User).filter(models.models.User.username == payload['sub']).first()
-    # user: Union[dict[str, Any], None] = db_dependency.get(payload['sub'], None)
+    user_id = int(payload['sub'])  # sub now holds UserID
+    user = db.query(models.models.User).filter(models.models.User.UserID == user_id).first()
 
     if user is None:
         raise HTTPException(
