@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from models.models import Project, ProjectColumn, User, ProjectHasUsers, Task
+from classes.classes import UserInfo
 from utils.database import SessionLocal
 from utils import validators
 from utils.auth import get_current_user
@@ -76,7 +77,7 @@ def create_project(
 This api requests checks to see if a project exists, and if so gathers a list of usernames to return.
 Accepts a single projectID
 '''
-@router.get("/projects/{project_id}/users", response_model=List[str])
+@router.get("/projects/{project_id}/users", response_model=List[UserInfo])
 def get_project_users(
         project_id: int,
         # current_user: User = Depends(get_current_user), #commented out for testing purposes to avoid the login-feature being required.
@@ -94,10 +95,10 @@ def get_project_users(
         .all()
     )
 
-    if not results:
+    if not users:
         raise HTTPException(status_code=404, detail="No users assigned to this project")
 
-    return [{"user_id": u.UserID, "username": u.username} for u in users]
+    return [UserInfo(user_id=u.UserID, username=u.username) for u in users]
 
 
 

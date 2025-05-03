@@ -37,3 +37,7 @@ class AssignmentCreate(BaseModel):
 class ProjectSummary(BaseModel):
     project_id: int
     title: str
+
+class UserInfo(BaseModel):
+    user_id: int
+    username: str
