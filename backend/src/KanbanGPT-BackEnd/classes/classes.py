@@ -34,7 +34,16 @@ class AssignmentCreate(BaseModel):
     task_id: int
     assignees: List[int]
 
+class ProjectSummary(BaseModel):
+    project_id: int
+    title: str
+
+class UserInfo(BaseModel):
+    user_id: int
+    username: str
+
 class LoginRequest(BaseModel):
     username: Optional[str]
     email: Optional[str]
     password: str
+

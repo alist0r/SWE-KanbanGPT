@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from models.models import Project, ProjectColumn, User, ProjectHasUsers, Task
+from classes.classes import UserInfo
 from utils.database import SessionLocal
 from utils import validators
 from utils.auth import get_current_user
@@ -82,7 +83,7 @@ def create_project(
 This api requests checks to see if a project exists, and if so gathers a list of usernames to return.
 Accepts a single projectID
 '''
-@router.get("/projects/{project_id}/users", response_model=List[str])
+@router.get("/projects/{project_id}/users", response_model=List[UserInfo])
 def get_project_users(
         project_id: int,
         # current_user: User = Depends(get_current_user), #commented out for testing purposes to avoid the login-feature being required.
@@ -93,17 +94,17 @@ def get_project_users(
         raise HTTPException(status_code=404, detail="Project not found")
 
     # Fetch usernames of users assigned to this project
-    results = (
-        db.query(User.username)
+    users = (
+        db.query(User.UserID, User.username)
         .join(ProjectHasUsers, User.UserID == ProjectHasUsers.UserID)
         .filter(ProjectHasUsers.ProjectID == project_id)
         .all()
     )
 
-    if not results:
+    if not users:
         raise HTTPException(status_code=404, detail="No users assigned to this project")
 
-    return [username for (username,) in results]
+    return [UserInfo(user_id=u.UserID, username=u.username) for u in users]
 
 
 
@@ -124,7 +125,7 @@ def get_project_tasks(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    query = db.query(Task).join(ProjectColumn).filter(ProjectColumn.ProjectID == project_id)
+    query = db.query(Task).join(ProjectColumn, Task.ColumnID == ProjectColumn.ColumnID).filter(ProjectColumn.ProjectID == project_id)
 
     if task_ids:
         query = query.filter(Task.TaskID.in_(task_ids))
@@ -133,6 +134,8 @@ def get_project_tasks(
 
     return [
         {
+            "project_id": project.ProjectID,
+            "project_title": project.title,
             "TaskID": task.TaskID,
             "title": task.title,
             "description": task.description,
