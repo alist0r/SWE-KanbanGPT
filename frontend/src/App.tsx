@@ -17,6 +17,7 @@ enum Pages {
   board_select,
   board_overview,
   make_task,
+  create_board
 }
 
 /**
@@ -28,6 +29,7 @@ const App = () => {
   const [page, setPage] = useState(Pages.login);
   const [board, setBoard] = useState(0);
   const [projects, setProjects] = useState(null)
+  const [tasks, setTasks] = useState(null)
 
   const walk_create_user = () => {
     setPage(Pages.create_user);
@@ -38,11 +40,16 @@ const App = () => {
   };
 
   const walk_create_task = () => {
+    setTasks(null);
     setPage(Pages.make_task);
   };
 
   const walk_board_select = () => {
     setPage(Pages.board_select);
+  }
+
+  const walk_create_board = () => {
+    setPage(Pages.create_board);
   }
 
   const walk_board_view = (board_id: int) => {
@@ -56,23 +63,23 @@ const App = () => {
   switch (page) {
     case Pages.login:
       Main = () => (
-        <Login create_user={walk_create_user} create_task={walk_create_task} board_select={walk_board_select} />
+        <Login create_user={walk_create_user} board_select={walk_board_select} />
       );
       break;
     case Pages.create_user:
 		Main = create_user(walk_login);
       break;
     case Pages.board_select:
-      Main = Board_select(walk_board_view, projects, setProjects);
+      Main = Board_select(walk_board_view, projects, setProjects, walk_create_board);
       break;
     case Pages.task:
       Main = () => <div>Task Page</div>;
       break;
     case Pages.make_task:
-		Main = create_task(walk_login);
+		Main = create_task(walk_board_view, board, setTasks);
       break;
     case Pages.board_overview:
-		Main = Board_View();
+		Main = Board_View(walk_create_task, board, tasks, setTasks);
       break;
     default:
       Main = () => <div>Not Found</div>;

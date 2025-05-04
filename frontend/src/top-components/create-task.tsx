@@ -29,7 +29,7 @@ const create_submission_handler = (url: string) => {
   };
   
 
-const create_task = (swap_screen: Function) => {
+const create_task = (swap_screen: Function, id: Number) => {
 	const submission_handler = create_submission_handler("http://localhost:8000/api/tasks");
 	return () => {
 		return (
@@ -43,7 +43,7 @@ const create_task = (swap_screen: Function) => {
 			 </form>
 			 or
 			 <br />
-			 <button onClick={swap_screen}>return to login</button>
+			 <button onClick={() => swap_screen(id)}>return to board</button>
 			</>
 		)
 

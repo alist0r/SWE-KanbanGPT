@@ -4,7 +4,7 @@ const Task_Container = ({ tasks }) => {
 	return (
 		<div>
 		{
-		 tasks.map((task) => <Task_Button title={task.title} prvRank={task.key} prvCol={0} />)
+		 tasks.map((task) => <Task_Button title={task.title} prvRank={task.TaskID} prvCol={task.ColumnID} />)
 		}
 		</div>
 	)

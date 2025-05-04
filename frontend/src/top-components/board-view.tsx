@@ -2,12 +2,12 @@ import axios from 'axios';
 import { useState, useEffect } from 'react'; 
 import { Board_Container } from "../sub-components/board-container";
 
-const create_board = () => {
+const create_board = (walk_create_board) => {
 	//TODO make this button goto project creation screen
 	return () => {
 		return (
 			<div>
-			 <button>create new project</button>
+			 <button onClick={walk_create_board}>create new project</button>
 			</div>
 		)
 	}
@@ -27,7 +27,7 @@ const get_projects = async () => {
 }
 
 
-const Board_select = (walk_board_view: Function, res: Array, setRes: Function) => {
+const Board_select = (walk_board_view: Function, res: Array, setRes: Function, walk_create_board: Function) => {
 	if (!res) {
 		const data = async () => {
 			const d = await get_projects()
@@ -36,7 +36,7 @@ const Board_select = (walk_board_view: Function, res: Array, setRes: Function) =
 		data();
 		return () => {<div>loading...</div>};
 	}
-	const New_Project = create_board();
+	const New_Project = create_board(walk_create_board);
 	const token = localStorage.getItem("access_token");
 	console.log(token);
 	return () => {
