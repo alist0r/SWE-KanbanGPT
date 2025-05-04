@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Board_Container } from "../sub-components/board-container";
 
 const create_board = (walk_create_board) => {
-	//TODO make this button goto project creation screen
 	return () => {
 		return (
 			<div>

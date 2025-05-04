@@ -9,6 +9,7 @@ import { Board_select } from './top-components/board-view';
 import { create_user } from './top-components/create-user'; // Renamed create_user -> CreateUser
 import { create_task } from './top-components/create-task'; // Renamed create_task -> CreateTask
 import { Board_View } from './top-components/list-view';
+import { Create_Board } from './top-components/create_board';
 
 
 enum Pages {
@@ -74,6 +75,9 @@ const App = () => {
       break;
     case Pages.task:
       Main = () => <div>Task Page</div>;
+      break;
+    case Pages.create_board:
+      Main = () => Create_Board(walk_board_select);
       break;
     case Pages.make_task:
 		Main = create_task(walk_board_view, board, setTasks);

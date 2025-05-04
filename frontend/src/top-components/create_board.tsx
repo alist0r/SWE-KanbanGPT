@@ -3,8 +3,6 @@ import axios from 'axios'
 const create_submission_handler = (url: string) => {
         return (formData) => {
           const json: any = {};
-          // Placeholder values
-          json["ColumnID"] = 1;
           formData.forEach((value, key) => {
                 json[key] = value;
           });
@@ -29,7 +27,7 @@ const create_submission_handler = (url: string) => {
 
 
 
-const Create_Board = () => {
+const Create_Board = (go_back: Function) => {
 	const submission_handler = create_submission_handler("http://localhost:8000/api/projects");
 	return (
 		<>
@@ -42,7 +40,7 @@ const Create_Board = () => {
 		 </form>
 		 or
 		 <br />
-		 <button>return to project select</button>
+		 <button onClick={go_back}>return to project select</button>
 		</>
 	)
 }
