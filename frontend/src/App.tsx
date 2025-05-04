@@ -71,6 +71,9 @@ const App = () => {
     case Pages.make_task:
 		Main = create_task(walk_login);
       break;
+    case Pages.board_overview:
+		Main = Board_View();
+      break;
     default:
       Main = () => <div>Not Found</div>;
   }

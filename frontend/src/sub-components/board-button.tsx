@@ -1,7 +1,7 @@
-const Board_Button = ({ title }) => {
+const Board_Button = ({ title, id, walk }) => {
 	return (
 		<div>
-		 <button>title={title}</button>
+		 <button onClick={() => walk(id)}>{title}</button>
 		</div>
 	)
 }

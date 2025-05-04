@@ -27,6 +27,7 @@ const Board_View = () => {
 		{title: 'plugh', desc: 'bar', rank: 1},
 		{title: 'toto', desc: 'foo', rank: 2}
 	];
+	return () => {
 	return (
 		<div style={{display: 'flex'}}>
 		 <Task_Container tasks={tasksa} />
@@ -36,6 +37,7 @@ const Board_View = () => {
 		 <Task_Container tasks={taskse} />
 		</div>
 	)
+	}
 
 }
 

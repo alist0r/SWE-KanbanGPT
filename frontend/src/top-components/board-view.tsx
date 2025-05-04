@@ -43,7 +43,7 @@ const Board_select = (walk_board_view: Function, res: Array, setRes: Function) =
 		return (
 			<>
 			 <New_Project />
-			 <Board_Container boards={res} />
+			 <Board_Container boards={res} walk={walk_board_view}/>
 			</>
 		)
 	}
