@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from models.models import User, ProjectHasUsers, Project, Task, Assignment
-from classes.classes import UserCreate
+from classes.classes import UserCreate, ProjectSummary
 from utils.database import SessionLocal
 from utils import validators
 from utils.security import hash_password
@@ -83,7 +83,7 @@ def create_user(
 
     return {"message": "User created successfully", "user_id": new_user.UserID}
 
-@router.get("/users/{user_id}/projects", response_model=List[str])
+@router.get("/users/{user_id}/projects", response_model=List[ProjectSummary])
 def get_user_projects(
         user_id: int,
         # current_user: User = Depends(get_current_user), # uncomment this line when full release is ready
@@ -97,7 +97,7 @@ def get_user_projects(
         raise HTTPException(status_code=404, detail="User is not assigned to any projects")
 
     projects = db.query(Project).filter(Project.ProjectID.in_([pid[0] for pid in project_ids])).all()
-    return [{"project_id": p.ProjectID, "title": p.title} for p in projects]
+    return [ProjectSummary(project_id=p.ProjectID, title=p.title) for p in projects]
 
 @router.get("/users/{user_id}/assignments", response_model=List[str])
 def get_user_assignments(
