@@ -14,10 +14,13 @@ const create_board = (walk_create_board) => {
 
 const get_projects = async () => {
 	//api expects usr id but i dont know how to get that from token, hardcoding here for testing
-	const USERID = 2;
-	const url: string = "http://localhost:8000/api/users/"+USERID+"/projects";
+	const url: string = "http://localhost:8000/api/users/projects";
+	const token = localStorage.getItem("access_token")
 	try {
-		const res = await axios.get(url, {headers: { 'Accept': 'application/json' }})
+		const res = await axios.get(url, {headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: 'application/json'
+		}})
 		return res.data;
 	} catch(e) {
 		console.error(e)

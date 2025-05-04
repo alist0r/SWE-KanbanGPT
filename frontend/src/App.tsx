@@ -41,11 +41,11 @@ const App = () => {
   };
 
   const walk_create_task = () => {
-    setTasks(null);
     setPage(Pages.make_task);
   };
 
   const walk_board_select = () => {
+    setProjects(null);
     setPage(Pages.board_select);
   }
 
@@ -54,6 +54,7 @@ const App = () => {
   }
 
   const walk_board_view = (board_id: int) => {
+    setTasks(null);
     setPage(Pages.board_overview);
     setBoard(board_id);
   }
@@ -80,7 +81,7 @@ const App = () => {
       Main = () => Create_Board(walk_board_select);
       break;
     case Pages.make_task:
-		Main = create_task(walk_board_view, board, setTasks);
+		Main = create_task(walk_board_view, board);
       break;
     case Pages.board_overview:
 		Main = Board_View(walk_create_task, board, tasks, setTasks);

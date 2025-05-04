@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { useState } from 'react'
 
-const create_submission_handler = (url: string) => {
+const create_submission_handler = (url: string, id) => {
 	return (formData) => {
 	  const json: any = {};
 	  // Placeholder values
-	  json["ColumnID"] = 1;
+	  json["ColumnID"] = id;
 	  formData.forEach((value, key) => {
 		json[key] = value;
 	  });
@@ -30,7 +30,7 @@ const create_submission_handler = (url: string) => {
   
 
 const create_task = (swap_screen: Function, id: Number) => {
-	const submission_handler = create_submission_handler("http://localhost:8000/api/tasks");
+	const submission_handler = create_submission_handler("http://localhost:8000/api/tasks", id);
 	return () => {
 		return (
 			<>
