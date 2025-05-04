@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from models.models import User, ProjectHasUsers, Project, Task, Assignment
-from classes.classes import UserCreate, ProjectSummary
+from classes.classes import UserCreate, ProjectSummary, UserInfo
 from utils.database import SessionLocal
 from utils import validators
 from utils.security import hash_password
@@ -113,3 +113,12 @@ def get_user_assignments(
         raise HTTPException(status_code=404, detail="User is not assigned to any tasks")
 
     return [task.title for task in assignments]
+
+
+
+@router.get("/users/", response_model=List[UserInfo])
+def get_all_users(
+        #current_user: User = Depends(get_current_user),
+        db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    return [{"user_id": u.UserID, "username": u.username} for u in users]
