@@ -83,11 +83,13 @@ def create_user(
 
     return {"message": "User created successfully", "user_id": new_user.UserID}
 
-@router.get("/users/{user_id}/projects", response_model=List[ProjectSummary])
+@router.get("/users/projects", response_model=List[ProjectSummary])
 def get_user_projects(
-        user_id: int,
-        # current_user: User = Depends(get_current_user), # uncomment this line when full release is ready
+        current_user: User = Depends(get_current_user), # uncomment this line when full release is ready
         db: Session = Depends(get_db)):
+    #user_id = 1
+    user_id = current_user.UserID
+
     user = db.query(User).filter(User.UserID == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
