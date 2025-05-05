@@ -10,6 +10,7 @@ import { create_user } from './top-components/create-user'; // Renamed create_us
 import { create_task } from './top-components/create-task'; // Renamed create_task -> CreateTask
 import { Board_View } from './top-components/list-view';
 import { Create_Board } from './top-components/create_board';
+import { Task_Display } from './top-components/task-display.tsx';
 
 
 enum Pages {
@@ -32,6 +33,7 @@ const App = () => {
   const [projects, setProjects] = useState(null)
   const [tasks, setTasks] = useState(null)
   const [col, setCol] = useState(null)
+  const [curTask, setCurTask] = useState(null)
 
   const walk_create_user = () => {
     setPage(Pages.create_user);
@@ -76,7 +78,7 @@ const App = () => {
       Main = Board_select(walk_board_view, projects, setProjects, walk_create_board);
       break;
     case Pages.task:
-      Main = () => <div>Task Page</div>;
+      Main = () => Task_Display(task_id);
       break;
     case Pages.create_board:
       Main = () => Create_Board(walk_board_select);
