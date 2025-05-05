@@ -31,6 +31,7 @@ const App = () => {
   const [board, setBoard] = useState(0);
   const [projects, setProjects] = useState(null)
   const [tasks, setTasks] = useState(null)
+  const [col, setCol] = useState(null)
 
   const walk_create_user = () => {
     setPage(Pages.create_user);
@@ -81,10 +82,10 @@ const App = () => {
       Main = () => Create_Board(walk_board_select);
       break;
     case Pages.make_task:
-		Main = create_task(walk_board_view, board);
+		Main = create_task(walk_board_view, board, col);
       break;
     case Pages.board_overview:
-		Main = Board_View(walk_create_task, board, tasks, setTasks);
+		Main = Board_View(walk_create_task, board, tasks, setTasks, setCol, walk_board_view);
       break;
     default:
       Main = () => <div>Not Found</div>;
