@@ -121,7 +121,7 @@ def move_task_to_column(
 
 
 
-# Line Y
+
 @router.get("/tasks/ai", response_model=TaskAIResponse)
 def get_task_ai_response_by_query(
     task_id: int,
