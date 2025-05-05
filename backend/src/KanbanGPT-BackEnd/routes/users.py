@@ -95,8 +95,8 @@ def get_user_projects(
         raise HTTPException(status_code=404, detail="User not found")
 
     project_ids = db.query(ProjectHasUsers.ProjectID).filter(ProjectHasUsers.UserID == user_id).all()
-    if not project_ids:
-        raise HTTPException(status_code=404, detail="User is not assigned to any projects")
+    #if not project_ids:
+    #    raise HTTPException(status_code=404, detail="User is not assigned to any projects")
 
     projects = db.query(Project).filter(Project.ProjectID.in_([pid[0] for pid in project_ids])).all()
     return [ProjectSummary(project_id=p.ProjectID, title=p.title) for p in projects]

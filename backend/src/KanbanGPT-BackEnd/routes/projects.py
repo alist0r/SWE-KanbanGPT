@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from models.models import Project, ProjectColumn, User, ProjectHasUsers, Task
-from classes.classes import UserInfo
+from classes.classes import UserInfo, AddUsersToProjectRequest
 from utils.database import SessionLocal
 from utils import validators
 from utils.auth import get_current_user
@@ -163,3 +163,36 @@ def get_project_columns(
     columns = db.query(ProjectColumn).filter(ProjectColumn.ProjectID == project_id).all()
 
     return [{"ColumnID": col.ColumnID, "title": col.title} for col in columns]
+
+
+# Line Y
+@router.post("/projects/add-users")
+def add_users_to_project(
+    request: AddUsersToProjectRequest,
+    #current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    project_query = db.query(Project)
+    if request.project_id:
+        project = project_query.filter(Project.ProjectID == request.project_id).first()
+    else:
+        project = project_query.filter(Project.title == request.project_title).first()
+
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    '''
+    if not db.query(ProjectHasUsers).filter_by(ProjectID=project.ProjectID, UserID=current_user.UserID).first():
+        raise HTTPException(status_code=403, detail="You do not have permission to modify this project")
+    '''
+    # Add new users
+    for user_id in request.user_ids:
+        if not validators.validate_user_exists(db, user_id):
+            raise HTTPException(status_code=404, detail=f"User ID {user_id} does not exist")
+        if db.query(ProjectHasUsers).filter_by(ProjectID=project.ProjectID, UserID=user_id).first():
+            continue  # Skip users already added
+        db.add(ProjectHasUsers(ProjectID=project.ProjectID, UserID=user_id))
+
+    db.commit()
+
+    return {"message": "Users successfully added to the project"}

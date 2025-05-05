@@ -51,3 +51,14 @@ class TaskAIResponse(BaseModel):
     title: str
     description: str
     ai_response: str
+
+class AddUsersToProjectRequest(BaseModel):
+    project_id: Optional[int] = None
+    project_title: Optional[str] = None
+    user_ids: List[int]
+
+    @classmethod
+    def validate(cls, values):
+        if not values.get("project_id") and not values.get("project_title"):
+            raise ValueError("Either project_id or project_title must be provided.")
+        return values
