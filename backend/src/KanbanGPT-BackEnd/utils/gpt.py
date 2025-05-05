@@ -8,9 +8,9 @@ client = openai.OpenAI(api_key=openai.api_key)
 def generate_task_from_prompt(prompt: str) -> dict:
     system_msg = {
         "role": "system",
-        "content": ("You are an assistant that writes task titles and descriptions for a kanban project management board."
-                    "Do not include the words 'Title' and 'Description' before the title and description."
-                    "Do not include other words before the task title or description. just print out the title and description."
+        "content": ("You are an assistant for a team that utilizes a kanban board to assist in development."
+                    "Members of the team will give you a task title and description.  You will formulate a step-by-step plan"
+                    "to accomplish this task."
                     )
     }
     user_msg = {
@@ -36,8 +36,9 @@ def generate_guidance_for_task(title: str, description: str) -> str:
     system_msg = {
         "role": "system",
         "content": (
-            "You are an assistant helping users break down tasks in a Kanban system."
-            "Provide step-by-step guidance, suggestions, and links to resources if appropriate."
+            "You are an assistant for a team that utilizes a kanban board to assist in development."
+                "Members of the team will give you a task title and description.  You will formulate a step-by-step plan"
+                "to accomplish this task."
         )
     }
     user_msg = {
