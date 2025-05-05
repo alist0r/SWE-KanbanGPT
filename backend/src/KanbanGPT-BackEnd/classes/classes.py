@@ -47,3 +47,7 @@ class LoginRequest(BaseModel):
     email: Optional[str]
     password: str
 
+class TaskAIResponse(BaseModel):
+    title: str
+    description: str
+    ai_response: str
