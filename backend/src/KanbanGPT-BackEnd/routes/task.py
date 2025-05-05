@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from utils.database import SessionLocal
-from classes.classes import TaskCreate, TaskMoveRequest
+from classes.classes import TaskCreate, TaskMoveRequest, TaskAIResponse
 from models.models import Task, AITaskDirection, ProjectColumn
 from utils import validators, gpt
 import traceback
@@ -118,6 +118,29 @@ def move_task_to_column(
     db.refresh(task)
 
     return {"message": "Task moved successfully", "task_id": task.TaskID, "new_column_id": task.ColumnID}
+
+
+
+# Line Y
+@router.get("/tasks/ai", response_model=TaskAIResponse)
+def get_task_ai_response_by_query(
+    task_id: int,
+    # current_user: User = Depends(get_current_user),  # uncomment in final release
+    db: Session = Depends(get_db)
+):
+    task = db.query(Task).filter(Task.TaskID == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    ai = db.query(AITaskDirection).filter(AITaskDirection.taskID == task_id).first()
+    if not ai:
+        raise HTTPException(status_code=404, detail="AI response not found for this task")
+
+    return TaskAIResponse(
+        title=task.title,
+        description=task.description,
+        ai_response=ai.response
+    )
 
 
 '''
