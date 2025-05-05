@@ -1,7 +1,8 @@
-const Board_Button = ({ title }) => {
+const Board_Button = ({ title, id, walk }) => {
+	console.log(id)
 	return (
 		<div>
-		 <button>title={title}</button>
+		 <button onClick={() => walk(id)}>{title}</button>
 		</div>
 	)
 }

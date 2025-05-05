@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Login = ({create_user, create_task, board_select}) => {
+const Login = ({create_user, board_select}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -59,7 +59,6 @@ const Login = ({create_user, create_task, board_select}) => {
       {message && <p>{message}</p>}
       <br />
       <button onClick={create_user}>Create User</button>
-      <button onClick={create_task}>Create Task</button>
     </div>
   );
 };
