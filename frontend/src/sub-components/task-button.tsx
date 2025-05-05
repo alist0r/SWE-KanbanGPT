@@ -24,7 +24,13 @@ const postCol = (task_id, col, setCol, walk, pid) => {
 	setCol(col)
 }
 
-const Task_Button = ({title, prvRank, prvCol, id, walk, pid}) => {
+const set_task = (walk_task, setCurTask, id) => {
+	console.log(id)
+	setCurTask(id)
+	walk_task()
+}
+
+const Task_Button = ({title, prvRank, prvCol, id, walk, pid, walk_task, setCurTask}) => {
 	const [rank, setRank] = useState(prvRank);
 	const [col, setCol] = useState(prvCol);
 	return (
@@ -35,7 +41,7 @@ const Task_Button = ({title, prvRank, prvCol, id, walk, pid}) => {
 		  type='number' 
 		  size='1'>
 		 </input>
-		 <button>{title}</button>
+		 <button onClick={() => set_task(walk_task, setCurTask, parseInt(id))}>{title}</button>
 		 <input
 		  value={col}
 		  onChange={e => postCol(parseInt(id), parseInt(e.target.value), setCol, walk, pid)} 

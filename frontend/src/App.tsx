@@ -33,7 +33,8 @@ const App = () => {
   const [projects, setProjects] = useState(null)
   const [tasks, setTasks] = useState(null)
   const [col, setCol] = useState(null)
-  const [curTask, setCurTask] = useState(null)
+  const [curTask, setCurTask] = useState(0)
+  const [desc, setDesc] = useState(null)
 
   const walk_create_user = () => {
     setPage(Pages.create_user);
@@ -62,6 +63,11 @@ const App = () => {
     setBoard(board_id);
   }
 
+  const walk_task = () => {
+	    setDesc(null);
+	  setPage(Pages.task)
+  }
+
 
   // Use a component container that you render based on the current page
   let Main = () => <></>;
@@ -78,7 +84,7 @@ const App = () => {
       Main = Board_select(walk_board_view, projects, setProjects, walk_create_board);
       break;
     case Pages.task:
-      Main = () => Task_Display(task_id);
+      Main = () => Task_Display(curTask, desc, setDesc, walk_board_view, board);
       break;
     case Pages.create_board:
       Main = () => Create_Board(walk_board_select);
@@ -87,7 +93,7 @@ const App = () => {
 		Main = create_task(walk_board_view, board, col);
       break;
     case Pages.board_overview:
-		Main = Board_View(walk_create_task, board, tasks, setTasks, setCol, walk_board_view);
+		Main = Board_View(walk_create_task, board, tasks, setTasks, setCol, walk_board_view, walk_task, setCurTask);
       break;
     default:
       Main = () => <div>Not Found</div>;

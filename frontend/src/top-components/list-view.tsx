@@ -22,7 +22,7 @@ const get_tasks = async (project_id, setCol) => {
 }
 
 
-const Board_View = (create_task, project_id, res, setRes, setCol, walk) => {
+const Board_View = (create_task, project_id, res, setRes, setCol, walk, walk_task, setCurTask) => {
 	if (!res) {
 		const data = async () => {
 			const d = await get_tasks(project_id, setCol)
@@ -59,17 +59,17 @@ const Board_View = (create_task, project_id, res, setRes, setCol, walk) => {
 			break;
 		}
 	}
-	
+
 	return () => {
 		return (
 			<>
 			<button onClick={() => create_task()}>create task</button>
 			<div style={{display: 'flex'}}>
-			 <Task_Container tasks={tasksa} walk={walk} pid={project_id} />
-			 <Task_Container tasks={tasksb} walk={walk} pid={project_id} />
-			 <Task_Container tasks={tasksc} walk={walk} pid={project_id} />
-			 <Task_Container tasks={tasksd} walk={walk} pid={project_id} />
-			 <Task_Container tasks={taskse} walk={walk} pid={project_id} />
+			 <Task_Container tasks={tasksa} walk={walk} pid={project_id} walk_task={walk_task} setCurTask={setCurTask} />
+			 <Task_Container tasks={tasksb} walk={walk} pid={project_id} walk_task={walk_task} setCurTask={setCurTask} />
+			 <Task_Container tasks={tasksc} walk={walk} pid={project_id} walk_task={walk_task} setCurTask={setCurTask} />
+			 <Task_Container tasks={tasksd} walk={walk} pid={project_id} walk_task={walk_task} setCurTask={setCurTask} />
+			 <Task_Container tasks={taskse} walk={walk} pid={project_id} walk_task={walk_task} setCurTask={setCurTask} />
 			</div>
 			</>
 		)
